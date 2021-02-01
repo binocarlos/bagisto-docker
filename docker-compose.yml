@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+
+  apache2:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: apache2
+    restart: always
+    # volumes:
+    #   - ./app:/var/www/html
+    working_dir: /var/www/html/
+    environment:
+      USER_UID: 1000
+    networks:
+      - bagisto-network
+    ports:
+      - '80:80'
+    expose:
+      - '80'
+    depends_on:
+      - database_server
+    links:
+      - database_server
+
+
+  database_server:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_ROOT_HOST: '%'
+    networks:
+      - bagisto-network
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - dbvolume:/var/lib/mysql
+
+volumes:
+  dbvolume:
+  app:
+
+networks:
+  bagisto-network:
